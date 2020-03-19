@@ -1,4 +1,3 @@
-const path = require('path')
 const multer = require('multer')
 const { multipleFileStorage, singleFileStorage } = require('../utils/imageStorage')
 
@@ -26,24 +25,25 @@ const singleUpload = multer(
 const multipleUpload = multer(
   {
     storage: multipleFileStorage, limits: {
-
+      files: 3,
       fileSize: process.env.MAX_IMAGE_SIZE * 1024 * 1024  // 2 MB (max file size)
     },
     fileFilter: fileFilter
   }
-).array('multiple', MAX_IMAGE_UPLOAD)
+).array('multiple', process.env.MAX_IMAGE_UPLOAD)
 
 
 
 function mySingleUpload(req, res, next) {
   singleUpload(req, res, function (err) {
     if (!req.file && !err) {
-      return res.send({ success: false, message: 'please add a image file' })
+      return res.status(400).send({ success: false, code: 400, message: 'please add a image file' })
     }
     if (err) {
-      return res.send({
-        "success": false,
-        "maxSize": `${process.env.MAX_IMAGE_SIZE}MB`,
+      return res.status(400).send({
+        success: false,
+        code: 400,
+        maxSize: `${process.env.MAX_IMAGE_SIZE}MB`,
         message: err.message || err
       })
     }
@@ -54,15 +54,18 @@ function mySingleUpload(req, res, next) {
 function myMultipleUpload(req, res, next) {
   multipleUpload(req, res, function (err) {
     if (req.files.length === 0 && !err) {
-      return res.send({ success: false, message: 'please add atleast 1 image file' })
+      return res.status(400).send({ success: false, code: 400, message: 'please add atleast 1 image file' })
     }
     if (err) {
-      return res.send({
-        "success": false,
-        "maxSize": `${process.env.FILE_SIZE}MB`,
+      return res.status(400).send({
+        success: false,
+        code: 400,
+        required: {
+          maxSize: `${process.env.MAX_IMAGE_SIZE}MB`,
+          maxUpload: `${process.env.MAX_IMAGE_UPLOAD}`
+        },
         message: err.message || err
       })
-
     }
     next();
   })

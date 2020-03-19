@@ -16,10 +16,17 @@ const { mySingleUpload, myMultipleUpload } = require('./middleware/uploadImage')
 
 //routes
 app.post('/single', mySingleUpload, function (req, res) {
-  res.send("submitted file")
+  const imageUrl = `http://${req.hostname}:${process.env.PORT}/${process.env.SINGLE_UPLOAD_FOLDER_NAME}/${req.file.filename}`
+  res.status(200).send({ success: true, code: 200, imgUrl: imageUrl })
 })
+
 app.post('/multiple', myMultipleUpload, function (req, res) {
-  res.send("submitted file")
+  const imgUrls = []
+  req.files.forEach((file) => {
+    imgUrls.push({ path: `http://${req.hostname}:${process.env.PORT}/${process.env.MULTIPLE_UPLOAD_FOLDER_NAME}/${file.filename}` }
+    )
+  })
+  res.status(200).send({ success: true, code: 200, imgUrls: imgUrls })
 })
 
 app.listen(process.env.PORT, () => {

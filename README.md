@@ -2,11 +2,10 @@
 
 ### Clone Image_Upload
  run the command to clone the  project
+ git clone https://github.com/sunny-sk/Image_Upload.git
 
 ### Change working directory
- cd Imag
-
-
+ cd Image_Upload
 
 ### install all packages to run project 
 Run  `npm install` to install the all necessary libraries in command window.
